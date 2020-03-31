@@ -23,16 +23,7 @@ class HomePageTest(TestCase):
     def test_redirects_after_POST(self):
         response = self.client.post('/', data={'item_text': 'A new list item'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
-
-    def test_display_all_list_items(self):
-        Item.objects.create(text="item 1")
-        Item.objects.create(text="item 2")
-
-        response = self.client.get('/')
-
-        self.assertIn('item 1', response.content.decode())
-        self.assertIn('item 1', response.content.decode())
+        self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
 
 
 class ItemModelTest(TestCase):
@@ -57,3 +48,19 @@ class ItemModelTest(TestCase):
     def test_only_save_items_when_necessary(self):
         self.client.get('/')
         self.assertEqual(Item.objects.count(), 0)
+
+
+class ListViewItems(TestCase):
+
+    def test_using_list_template(self):
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_display_all_list_items(self):
+        Item.objects.create(text="item 1")
+        Item.objects.create(text="item 2")
+
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+
+        self.assertContains(response, 'item 1')
+        self.assertContains(response, 'item 2')
