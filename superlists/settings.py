@@ -14,7 +14,7 @@ import os
 import django_heroku
 import dj_database_url
 
-if 'HEROKU_APP' in os.environ:
+if 'HEROKU_APP' not in os.environ:
     # Activate Django-Heroku
     django_heroku.settings(locals())
 
